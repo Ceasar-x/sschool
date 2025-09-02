@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "app.js",
   "scripts": {
-    "dev": "nodemon app.js"
+    "build": "npm install",
+    "dev": "node app.js"
   },
   "keywords": [],
   "author": "",
