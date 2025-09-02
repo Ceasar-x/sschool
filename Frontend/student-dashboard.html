@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SSchool - Student Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <h2>SSchool</h2>
+          <p>Student Portal</p>
+        </div>
+        <nav class="sidebar-menu">
+          <a
+            href="#"
+            class="menu-item active"
+            onclick="showSection('dashboard')"
+          >
+            <i>📊</i> Dashboard
+          </a>
+          <a href="#" class="menu-item" onclick="showSection('profile')">
+            <i>👤</i> My Profile
+          </a>
+          <a href="#" class="menu-item" onclick="showSection('books')">
+            <i>📚</i> Books
+          </a>
+          <a href="#" class="menu-item" onclick="showSection('materials')">
+            <i>📝</i> My Materials
+          </a>
+        </nav>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+
+      <div class="main-content">
+        <div class="dashboard-header">
+          <h1 class="dashboard-title">Student Dashboard</h1>
+          <div class="user-info">
+            <div class="user-avatar" id="userAvatar">S</div>
+            <span id="userName">Student</span>
+          </div>
+        </div>
+
+        <div class="dashboard-content">
+          <!-- Dashboard Overview Section -->
+          <div id="dashboardSection">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <h3>Total Books</h3>
+                <div class="number" id="totalBooks">0</div>
+                <div class="change">Available in library</div>
+              </div>
+              <div class="stat-card">
+                <h3>My Materials</h3>
+                <div class="number" id="totalMaterials">0</div>
+                <div class="change">Study materials added</div>
+              </div>
+            </div>
+
+            <div class="content-section">
+              <div class="section-header">
+                <h2 class="section-title">Recent Books</h2>
+              </div>
+              <div id="recentBooks" class="loading">
+                Loading recent books...
+              </div>
+            </div>
+          </div>
+
+          <!-- Profile Section -->
+          <div id="profileSection" style="display: none">
+            <div class="content-section">
+              <div class="section-header">
+                <h2 class="section-title">My Profile</h2>
+              </div>
+              <form id="profileForm">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="profileName">Full Name</label>
+                    <input type="text" id="profileName" name="name" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="profileEmail">Email (Cannot be changed)</label>
+                    <input
+                      type="email"
+                      id="profileEmail"
+                      name="email"
+                      disabled
+                    />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="profileCourse">Course</label>
+                    <input type="text" id="profileCourse" name="course" />
+                  </div>
+                  <div class="form-group">
+                    <label for="profileStudentId">Student ID</label>
+                    <input type="text" id="profileStudentId" name="studentId" />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="profileSemester">Semester</label>
+                    <input type="text" id="profileSemester" name="semester" />
+                  </div>
+                  <div class="form-group">
+                    <label for="profileFaculty">Faculty</label>
+                    <input type="text" id="profileFaculty" name="faculty" />
+                  </div>
+                </div>
+                <button type="submit" class="btn-primary">
+                  Update Profile
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Books Section -->
+          <div id="booksSection" style="display: none">
+            <div class="content-section">
+              <div class="section-header">
+                <h2 class="section-title">Available Books</h2>
+              </div>
+              <div id="booksList" class="loading">Loading books...</div>
+            </div>
+          </div>
+
+          <!-- Materials Section -->
+          <div id="materialsSection" style="display: none">
+            <div class="content-section">
+              <div class="section-header">
+                <h2 class="section-title">My Study Materials</h2>
+                <button class="btn-primary" onclick="showAddMaterialModal()">
+                  Add New Material
+                </button>
+              </div>
+              <div id="materialsList" class="loading">Loading materials...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Material Modal -->
+    <div id="addMaterialModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Add New Study Material</h3>
+          <span class="close" onclick="closeModal('addMaterialModal')"
+            >&times;</span
+          >
+        </div>
+        <div class="modal-body">
+          <form id="addMaterialForm">
+            <div class="form-group">
+              <label for="materialTitle">Title</label>
+              <input type="text" id="materialTitle" name="title" required />
+            </div>
+            <div class="form-group">
+              <label for="materialContent">Content</label>
+              <textarea
+                id="materialContent"
+                name="content"
+                rows="6"
+                required
+              ></textarea>
+            </div>
+            <button type="submit" class="btn-primary">Add Material</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+      // Check authentication
+      document.addEventListener("DOMContentLoaded", function () {
+        checkAuth("student");
+        loadStudentDashboardData();
+        setupStudentEventListeners();
+      });
+
+      function setupStudentEventListeners() {
+        document
+          .getElementById("profileForm")
+          .addEventListener("submit", handleProfileUpdate);
+        document
+          .getElementById("addMaterialForm")
+          .addEventListener("submit", handleAddMaterial);
+      }
+
+      function showSection(section) {
+        // Update active menu item
+        document.querySelectorAll(".menu-item").forEach((item) => {
+          item.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        // Hide all sections
+        const sections = [
+          "dashboardSection",
+          "profileSection",
+          "booksSection",
+          "materialsSection",
+        ];
+        sections.forEach((sectionId) => {
+          document.getElementById(sectionId).style.display = "none";
+        });
+
+        // Show selected section
+        document.getElementById(`${section}Section`).style.display = "block";
+
+        // Load section data
+        switch (section) {
+          case "dashboard":
+            loadStudentDashboardData();
+            break;
+          case "profile":
+            loadProfile();
+            break;
+          case "books":
+            loadBooks();
+            break;
+          case "materials":
+            loadMaterials();
+            break;
+        }
+      }
+    </script>
+  </body>
+</html>

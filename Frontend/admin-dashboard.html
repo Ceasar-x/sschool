@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SSchool - Admin Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css" />
+  </head>
+  <body>
+    <div class="dashboard-container">
+      <div class="sidebar">
+        <div class="sidebar-header">
+          <h2>SSchool</h2>
+          <p>Admin Portal</p>
+        </div>
+        <nav class="sidebar-menu">
+          <a
+            href="#"
+            class="menu-item active"
+            onclick="showSection('dashboard')"
+          >
+            <i>📊</i> Dashboard
+          </a>
+          <a href="#" class="menu-item" onclick="showSection('users')">
+            <i>👥</i> Users
+          </a>
+          <a href="#" class="menu-item" onclick="showSection('books')">
+            <i>📚</i> Books
+          </a>
+          <a href="#" class="menu-item" onclick="showSection('create-admin')">
+            <i>👤</i> Create Admin
+          </a>
+        </nav>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+      </div>
+
+      <div class="main-content">
+        <div class="dashboard-header">
+          <h1 class="dashboard-title">Admin Dashboard</h1>
+          <div class="user-info">
+            <div class="user-avatar" id="userAvatar">A</div>
+            <span id="userName">Admin</span>
+          </div>
+        </div>
+
+        <div class="dashboard-content">
+          <!-- Dashboard Overview Section -->
+          <div id="dashboardSection">
+            <div class="stats-grid">
+              <div class="stat-card">
+                <h3>Total Users</h3>
+                <div class="number" id="totalUsers">0</div>
+                <div class="change">Registered users</div>
+              </div>
+              <div class="stat-card">
+                <h3>Students</h3>
+                <div class="number" id="totalStudents">0</div>
+                <div class="change">Active students</div>
+              </div>
+              <div class="stat-card">
+                <h3>Admins</h3>
+                <div class="number" id="totalAdmins">0</div>
+                <div class="change">System admins</div>
+              </div>
+              <div class="stat-card">
+                <h3>Books</h3>
+                <div class="number" id="totalBooks">0</div>
+                <div class="change">In library</div>
+              </div>
+            </div>
+
+            <div class="content-section">
+              <div class="section-header">
+                <h2 class="section-title">Recent Users</h2>
+              </div>
+              <div id="recentUsers" class="loading">
+                Loading recent users...
+              </div>
+            </div>
+          </div>
+
+          <!-- Users Section -->
+          <div id="usersSection" style="display: none">
+            <div class="content-section">
+              <div class="section-header">
+                <h2 class="section-title">All Users</h2>
+              </div>
+              <div id="usersList" class="loading">Loading users...</div>
+            </div>
+          </div>
+
+          <!-- Books Section -->
+          <div id="booksSection" style="display: none">
+            <div class="content-section">
+              <div class="section-header">
+                <h2 class="section-title">Book Management</h2>
+                <button class="btn-primary" onclick="showAddBookModal()">
+                  Add New Book
+                </button>
+              </div>
+              <div id="booksList" class="loading">Loading books...</div>
+            </div>
+          </div>
+
+          <!-- Create Admin Section -->
+          <div id="create-adminSection" style="display: none">
+            <div class="content-section">
+              <div class="section-header">
+                <h2 class="section-title">Create New Admin</h2>
+              </div>
+              <form id="createAdminForm">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="newAdminName">Full Name</label>
+                    <input type="text" id="newAdminName" name="name" required />
+                  </div>
+                  <div class="form-group">
+                    <label for="newAdminEmail">Email Address</label>
+                    <input
+                      type="email"
+                      id="newAdminEmail"
+                      name="email"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="newAdminCourse">Course/Department</label>
+                    <input
+                      type="text"
+                      id="newAdminCourse"
+                      name="course"
+                      required
+                    />
+                  </div>
+                  <div class="form-group">
+                    <label for="newAdminFaculty">Faculty</label>
+                    <input
+                      type="text"
+                      id="newAdminFaculty"
+                      name="faculty"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="newAdminPassword">Password</label>
+                  <input
+                    type="password"
+                    id="newAdminPassword"
+                    name="password"
+                    required
+                  />
+                </div>
+                <button type="submit" class="btn-primary">
+                  Create Admin Account
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Book Modal -->
+    <div id="addBookModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Add New Book</h3>
+          <span class="close" onclick="closeModal('addBookModal')"
+            >&times;</span
+          >
+        </div>
+        <div class="modal-body">
+          <form id="addBookForm">
+            <div class="form-group">
+              <label for="bookName">Book Name</label>
+              <input type="text" id="bookName" name="bookName" required />
+            </div>
+            <div class="form-group">
+              <label for="bookAuthor">Author</label>
+              <input type="text" id="bookAuthor" name="author" required />
+            </div>
+            <div class="form-group">
+              <label for="bookDescription">Description</label>
+              <textarea
+                id="bookDescription"
+                name="description"
+                rows="4"
+              ></textarea>
+            </div>
+            <button type="submit" class="btn-primary">Add Book</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit User Modal -->
+    <div id="editUserModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3 class="modal-title">Edit User</h3>
+          <span class="close" onclick="closeModal('editUserModal')"
+            >&times;</span
+          >
+        </div>
+        <div class="modal-body">
+          <form id="editUserForm">
+            <input type="hidden" id="editUserId" />
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editUserName">Full Name</label>
+                <input type="text" id="editUserName" name="name" required />
+              </div>
+              <div class="form-group">
+                <label for="editUserEmail">Email</label>
+                <input type="email" id="editUserEmail" name="email" required />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editUserCourse">Course</label>
+                <input type="text" id="editUserCourse" name="course" />
+              </div>
+              <div class="form-group">
+                <label for="editUserFaculty">Faculty</label>
+                <input type="text" id="editUserFaculty" name="faculty" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="editUserRole">Role</label>
+                <select id="editUserRole" name="role">
+                  <option value="student">Student</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="editUserStudentId">Student ID</label>
+                <input type="text" id="editUserStudentId" name="studentId" />
+              </div>
+            </div>
+            <button type="submit" class="btn-primary">Update User</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+      // Check authentication
+      document.addEventListener("DOMContentLoaded", function () {
+        checkAuth("admin");
+        loadDashboardData();
+        setupAdminEventListeners();
+      });
+
+      function setupAdminEventListeners() {
+        document
+          .getElementById("createAdminForm")
+          .addEventListener("submit", handleCreateAdmin);
+        document
+          .getElementById("addBookForm")
+          .addEventListener("submit", handleAddBook);
+        document
+          .getElementById("editUserForm")
+          .addEventListener("submit", handleEditUser);
+      }
+
+      function showSection(section) {
+        // Update active menu item
+        document.querySelectorAll(".menu-item").forEach((item) => {
+          item.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        // Hide all sections
+        const sections = [
+          "dashboardSection",
+          "usersSection",
+          "booksSection",
+          "create-adminSection",
+        ];
+        sections.forEach((sectionId) => {
+          document.getElementById(sectionId).style.display = "none";
+        });
+
+        // Show selected section
+        document.getElementById(`${section}Section`).style.display = "block";
+
+        // Load section data
+        switch (section) {
+          case "dashboard":
+            loadDashboardData();
+            break;
+          case "users":
+            loadUsers();
+            break;
+          case "books":
+            loadAdminBooks();
+            break;
+          case "create-admin":
+            // No data to load for create admin form
+            break;
+        }
+      }
+    </script>
+  </body>
+</html>
