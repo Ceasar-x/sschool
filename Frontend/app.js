@@ -1,5 +1,5 @@
 // Base URL for API calls
-const API_BASE_URL = 'http://localhost:4000/api';
+const API_BASE_URL = 'https://sschool-dbie.onrender.com/api';
 
 // Utility function to make authenticated requests
 async function fetchWithAuth(url, options = {}) {
