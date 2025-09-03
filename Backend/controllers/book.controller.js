@@ -1,4 +1,6 @@
 const Book = require("../models/Book.model");
+const { sendEmail } = require("../services/nodemailer")
+
 
 async function listBooks(req, res) {
   try {
@@ -84,6 +86,26 @@ async function createBook(req, res) {
     const populatedBook = await Book.findById(book._id)
       .populate('userId', 'name email role');
 
+    // Send notification email to admin
+    const adminNotificationSubject = "SSchool - New Book Added";
+    const adminNotificationMessage = `Dear ${req.user.name},
+
+You have successfully added a new book to the library.
+
+Book Details:
+- Book Name: ${book.bookName}
+- Author: ${book.author}
+- Description: ${book.description || 'No description provided'}
+- Added on: ${new Date(book.createdAt).toLocaleDateString()}
+
+The book is now available for all users to view.
+
+Best regards,
+SSchool Team
+Developer: kunlexlatest@gmail.com`;
+
+    await sendEmail(req.user.email, adminNotificationSubject, adminNotificationMessage);
+
     res.status(201).json({ 
       message: "Book created successfully", 
       book: populatedBook 
@@ -109,6 +131,26 @@ async function updateBook(req, res) {
       { new: true, runValidators: true }
     ).populate('userId', 'name email role');
 
+    // Send notification email to admin
+    const adminNotificationSubject = "SSchool - Book Updated";
+    const adminNotificationMessage = `Dear ${req.user.name},
+
+You have successfully updated a book in the library.
+
+Updated Book Details:
+- Book Name: ${book.bookName}
+- Author: ${book.author}
+- Description: ${book.description || 'No description provided'}
+- Updated on: ${new Date(book.updatedAt).toLocaleDateString()}
+
+If you have any questions about these changes, please contact support.
+
+Best regards,
+SSchool Team
+Developer: kunlexlatest@gmail.com`;
+
+    await sendEmail(req.user.email, adminNotificationSubject, adminNotificationMessage);
+
     if (!book) {
       return res.status(404).json({ error: "Book not found" });
     }
@@ -127,11 +169,41 @@ async function updateBook(req, res) {
 
 async function deleteBook(req, res) {
   try {
-    const book = await Book.findByIdAndDelete(req.params.id);
+    const book = await Book.findById(req.params.id);
     
     if (!book) {
       return res.status(404).json({ error: "Book not found" });
     }
+
+    // Store book info before deletion
+    const deletedBookInfo = {
+      bookName: book.bookName,
+      author: book.author,
+      description: book.description
+    };
+
+    // Delete the book
+    await Book.findByIdAndDelete(req.params.id);
+
+    // Send notification email to admin
+    const adminNotificationSubject = "SSchool - Book Deleted";
+    const adminNotificationMessage = `Dear ${req.user.name},
+
+You have successfully deleted a book from the library.
+
+Deleted Book Details:
+- Book Name: ${deletedBookInfo.bookName}
+- Author: ${deletedBookInfo.author}
+- Description: ${deletedBookInfo.description || 'No description was provided'}
+- Deleted on: ${new Date().toLocaleDateString()}
+
+The book is no longer available for users to view.
+
+Best regards,
+SSchool Team
+Developer: kunlexlatest@gmail.com`;
+
+    await sendEmail(req.user.email, adminNotificationSubject, adminNotificationMessage);
     
     res.json({ message: "Book deleted successfully" });
   } catch (err) {
@@ -144,6 +216,7 @@ async function deleteBook(req, res) {
     res.status(500).json({ error: "Server error while deleting book" });
   }
 }
+
 
 async function totalBooks(req, res) {
   try {

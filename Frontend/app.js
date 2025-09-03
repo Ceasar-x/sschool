@@ -379,26 +379,28 @@ function createBooksTable(books, showAddedBy = false) {
   const addedByColumn = showAddedBy ? '<th>Added By</th>' : '';
 
   return `
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Book Name</th>
-          <th>Author</th>
-          <th>Description</th>
-          ${addedByColumn}
-        </tr>
-      </thead>
-      <tbody>
-        ${books.map(book => `
+    <div class="table-container">
+      <table class="table">
+        <thead>
           <tr>
-            <td>${book.bookName}</td>
-            <td>${book.author}</td>
-            <td>${book.description || 'No description available'}</td>
-            ${showAddedBy ? `<td>${book.userId ? book.userId.name : 'System'}</td>` : ''}
+            <th>Book Name</th>
+            <th>Author</th>
+            <th class="description">Description</th>
+            ${addedByColumn}
           </tr>
-        `).join('')}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          ${books.map(book => `
+            <tr>
+              <td>${book.bookName}</td>
+              <td>${book.author}</td>
+              <td class="description">${book.description || 'No description available'}</td>
+              ${showAddedBy ? `<td>${book.userId ? book.userId.name : 'System'}</td>` : ''}
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
   `;
 }
 

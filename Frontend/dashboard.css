@@ -26,6 +26,7 @@ body {
     position: fixed;
     height: 100vh;
     overflow-y: auto;
+    z-index: 100;
 }
 
 .sidebar-header {
@@ -209,9 +210,10 @@ body {
     padding: 25px 30px;
     border-bottom: 1px solid #e2e8f0;
     display: flex;
-    justify-content: between;
+    justify-content: space-between;
     align-items: center;
     gap: 20px;
+    flex-wrap: wrap;
 }
 
 .section-title {
@@ -219,6 +221,7 @@ body {
     font-weight: 600;
     color: #2d3748;
     flex: 1;
+    min-width: 200px;
 }
 
 .btn-primary {
@@ -234,6 +237,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
 }
 
 .btn-primary:hover {
@@ -241,10 +245,18 @@ body {
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
+/* Table Container for Responsive Scrolling */
+.table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 25px 25px;
+}
+
 /* Tables */
 .table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 600px; /* Ensures table maintains minimum width */
 }
 
 .table th,
@@ -252,6 +264,7 @@ body {
     padding: 15px;
     text-align: left;
     border-bottom: 1px solid #e2e8f0;
+    white-space: nowrap;
 }
 
 .table th {
@@ -261,10 +274,27 @@ body {
     font-size: 14px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .table tr:hover {
     background: #f7fafc;
+}
+
+.table td {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Special handling for description columns */
+.table td.description {
+    max-width: 300px;
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.4;
 }
 
 .role-badge {
@@ -274,6 +304,7 @@ body {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: inline-block;
 }
 
 .role-badge.student {
@@ -289,17 +320,20 @@ body {
 /* Action Buttons */
 .action-btns {
     display: flex;
-    gap: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
+    min-width: 120px;
 }
 
 .btn-sm {
-    padding: 6px 12px;
+    padding: 6px 10px;
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 500;
     transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .btn-edit {
@@ -387,6 +421,8 @@ body {
     width: 90%;
     max-width: 500px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-header {
@@ -447,6 +483,21 @@ body {
     display: none;
 }
 
+/* Mobile Menu Toggle (for future use) */
+.mobile-menu-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    background: #2d3748;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
 /* Responsive Design */
 @media (max-width: 1024px) {
     .sidebar {
@@ -459,14 +510,39 @@ body {
     
     .stats-grid {
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+    }
+    
+    .dashboard-content {
+        padding: 25px;
+    }
+    
+    .table {
+        min-width: 500px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 12px;
+        font-size: 13px;
     }
 }
 
 @media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
     .sidebar {
         width: 100%;
-        position: relative;
-        height: auto;
+        position: fixed;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+    }
+    
+    .sidebar.open {
+        transform: translateX(0);
     }
     
     .main-content {
@@ -501,23 +577,52 @@ body {
         text-align: center;
     }
     
-    .action-btns {
-        flex-direction: column;
+    .section-title {
+        min-width: auto;
+    }
+    
+    .table-container {
+        padding: 0 15px 15px;
+        margin: 0 -20px;
     }
     
     .table {
-        font-size: 14px;
+        min-width: 600px;
+        font-size: 12px;
     }
     
     .table th,
     .table td {
-        padding: 10px;
+        padding: 10px 8px;
+    }
+    
+    .table td {
+        max-width: 150px;
+    }
+    
+    .table td.description {
+        max-width: 200px;
+    }
+    
+    .action-btns {
+        flex-direction: column;
+        gap: 4px;
+        min-width: 80px;
+    }
+    
+    .btn-sm {
+        font-size: 10px;
+        padding: 5px 8px;
     }
 }
 
 @media (max-width: 480px) {
     .dashboard-title {
         font-size: 24px;
+    }
+    
+    .stat-card {
+        padding: 20px;
     }
     
     .stat-card .number {
@@ -527,9 +632,70 @@ body {
     .modal-content {
         width: 95%;
         margin: 10% auto;
+        max-height: 80vh;
     }
     
     .modal-body {
         padding: 20px;
     }
+    
+    .table-container {
+        padding: 0 10px 10px;
+        margin: 0 -20px;
+    }
+    
+    .table {
+        min-width: 500px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 8px 6px;
+        font-size: 11px;
+    }
+    
+    .table td {
+        max-width: 120px;
+    }
+    
+    .table td.description {
+        max-width: 180px;
+    }
+    
+    .btn-sm {
+        font-size: 9px;
+        padding: 4px 6px;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 360px) {
+    .dashboard-content {
+        padding: 15px;
+    }
+    
+    .table-container {
+        margin: 0 -15px;
+    }
+    
+    .table {
+        min-width: 450px;
+    }
+    
+    .table th,
+    .table td {
+        padding: 6px 4px;
+    }
+}
+
+/* Utility classes for table content */
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.text-wrap {
+    white-space: normal;
+    word-wrap: break-word;
 }
